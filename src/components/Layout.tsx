@@ -2,7 +2,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Tag } from 'antd';
 import {
   UserOutlined, TeamOutlined, LogoutOutlined, ThunderboltOutlined,
-  FileTextOutlined, BookOutlined,
+  FileTextOutlined, BookOutlined, DashboardOutlined, ShoppingOutlined,
+  OrderedListOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
 import { useDictData } from '../hooks/useDict';
@@ -25,9 +26,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const menuItems = [
     {
+      key: ROUTES.DASHBOARD,
+      icon: <DashboardOutlined />,
+      label: '仪表盘',
+    },
+    {
       key: ROUTES.USERS,
       icon: <TeamOutlined />,
       label: '用户管理',
+    },
+    {
+      key: ROUTES.PRODUCTS,
+      icon: <ShoppingOutlined />,
+      label: '商品管理',
+    },
+    {
+      key: ROUTES.ORDERS,
+      icon: <OrderedListOutlined />,
+      label: '订单管理',
     },
     ...(isAdmin ? [
       {
@@ -45,9 +61,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const userMenu = {
     items: [
+      { key: 'profile', icon: <UserOutlined />, label: '个人中心' },
+      { type: 'divider' as const },
       { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', danger: true },
     ],
     onClick: ({ key }: { key: string }) => {
+      if (key === 'profile') navigate(ROUTES.PROFILE);
       if (key === 'logout') logout();
     },
   };

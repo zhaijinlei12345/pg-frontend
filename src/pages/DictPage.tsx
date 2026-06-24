@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Table, Button, Modal, Form, Input, Space, Popconfirm, Typography, Card, App, Tag, Row, Col, Switch } from 'antd';
-import { PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { PlusOutlined, ReloadOutlined, CloseOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { dictAPI } from '../api/dict.api';
 import type { DictType, DictEntry } from '../api/dict.api';
@@ -170,6 +170,7 @@ export default function DictPage() {
                 <Space>
                   <Button size="small" icon={<ReloadOutlined />} onClick={refreshEntries}>刷新</Button>
                   <Button type="primary" size="small" icon={<PlusOutlined />} onClick={openEntryCreate}>新增条目</Button>
+                  <Button size="small" icon={<CloseOutlined />} onClick={() => setSelectedType('')}>关闭</Button>
                 </Space>
               }
               style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}

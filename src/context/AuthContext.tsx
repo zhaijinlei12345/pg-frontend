@@ -10,6 +10,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, age?: number) => Promise<void>;
   logout: () => void;
+  updateAuth: (user: User, token: string) => void;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -54,6 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
   };
 
+  const updateAuth = (newUser: User, newToken: string) => {
+    setUser(newUser);
+    setToken(newToken);
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -84,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, login, register, logout }}>
+    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, login, register, logout, updateAuth }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,6 +6,10 @@ import LoginPage from './pages/LoginPage';
 import UsersPage from './pages/UsersPage';
 import AuditLogsPage from './pages/AuditLogsPage';
 import DictPage from './pages/DictPage';
+import ProfilePage from './pages/ProfilePage';
+import DashboardPage from './pages/DashboardPage';
+import ProductsPage from './pages/ProductsPage';
+import OrdersPage from './pages/OrdersPage';
 import { ROUTES } from './routes';
 
 function RequireAuth() {
@@ -25,12 +29,16 @@ const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
+      { index: true, element: <DashboardPage /> },
       { path: ROUTES.USERS, element: <UsersPage /> },
+      { path: ROUTES.PRODUCTS, element: <ProductsPage /> },
+      { path: ROUTES.ORDERS, element: <OrdersPage /> },
       { path: ROUTES.AUDIT_LOGS, element: <AuditLogsPage /> },
       { path: ROUTES.DICT, element: <DictPage /> },
+      { path: ROUTES.PROFILE, element: <ProfilePage /> },
     ],
   },
-  { path: '*', element: <Navigate to={ROUTES.USERS} replace /> },
+  { path: '*', element: <Navigate to={ROUTES.DASHBOARD} replace /> },
 ]);
 
 export default function App() {

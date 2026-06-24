@@ -1,4 +1,4 @@
-import { Select, Typography, Card, App, Table, Tag } from 'antd';
+import { Select, Typography, Card, Table, Tag } from 'antd';
 import type { AuditLog } from '../api/auditLogs.api';
 import type { ColumnsType } from 'antd/es/table';
 import { useAuditLogs } from '../hooks/useAuditLogs';
@@ -7,12 +7,11 @@ import { useDictData } from '../hooks/useDict';
 const { Title } = Typography;
 
 export default function AuditLogsPage() {
-  const { message: msg } = App.useApp();
   const { data: actionDict } = useDictData('audit_action');
 
   function actionTag(a: string) {
     const e = actionDict?.entries.find(x => x.key === a);
-    return <Tag color={e?.color}>{e?.label || a}</Tag>;
+    return <Tag color={e?.color || undefined}>{e?.label || a}</Tag>;
   }
 
   const {
