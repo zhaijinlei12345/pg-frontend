@@ -18,7 +18,9 @@ export function useDashboard() {
     }
   }, []);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
   return { stats, loading, refresh: fetch };
 }

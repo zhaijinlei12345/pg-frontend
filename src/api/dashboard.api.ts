@@ -12,6 +12,5 @@ export interface DashboardStats {
 }
 
 export const dashboardAPI = {
-  stats: () =>
-    client.get<{ success: boolean; data: DashboardStats }>('/dashboard/stats'),
+  stats: () => client.get<{ success: boolean; data: DashboardStats }>('/dashboard/stats'),
 };

@@ -21,7 +21,9 @@ export function useDictData(code: string) {
     }
   }, [code]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
   return { data, loading, refresh: fetch };
 }
@@ -43,7 +45,9 @@ export function useDictTypes() {
     }
   }, []);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
   return { types, loading, refresh: fetch };
 }
@@ -56,7 +60,10 @@ export function useDictEntries(typeCode: string) {
   const [loading, setLoading] = useState(false);
 
   const fetch = useCallback(async () => {
-    if (!typeCode) { setEntries([]); return; }
+    if (!typeCode) {
+      setEntries([]);
+      return;
+    }
     setLoading(true);
     try {
       const res = await dictAPI.listEntries(typeCode);
@@ -66,7 +73,9 @@ export function useDictEntries(typeCode: string) {
     }
   }, [typeCode]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
   return { entries, loading, refresh: fetch };
 }

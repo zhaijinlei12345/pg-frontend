@@ -20,13 +20,14 @@ export interface UserListParams {
 
 export const usersAPI = {
   list: (params: UserListParams) =>
-    client.get<{ success: boolean; data: User[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>('/users', { params }),
-  getById: (id: number) =>
-    client.get<{ success: boolean; data: User }>(`/users/${id}`),
-  create: (data: { name: string; email: string; age?: number; role?: string }) =>
-    client.post('/users', data),
+    client.get<{
+      success: boolean;
+      data: User[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>('/users', { params }),
+  getById: (id: number) => client.get<{ success: boolean; data: User }>(`/users/${id}`),
+  create: (data: { name: string; email: string; age?: number; role?: string }) => client.post('/users', data),
   update: (id: number, data: { name?: string; email?: string; age?: number; role?: string }) =>
     client.put(`/users/${id}`, data),
-  delete: (id: number) =>
-    client.delete(`/users/${id}`),
+  delete: (id: number) => client.delete(`/users/${id}`),
 };

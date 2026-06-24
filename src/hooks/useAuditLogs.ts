@@ -27,12 +27,20 @@ export function useAuditLogs() {
     }
   }, [page, pageSize, actionFilter]);
 
-  useEffect(() => { fetchLogs(); }, [fetchLogs]);
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
 
   return {
-    logs, loading, total,
-    page, pageSize, actionFilter,
-    setPage, setPageSize, setActionFilter,
+    logs,
+    loading,
+    total,
+    page,
+    pageSize,
+    actionFilter,
+    setPage,
+    setPageSize,
+    setActionFilter,
     fetchLogs,
   };
 }

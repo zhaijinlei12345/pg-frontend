@@ -33,27 +33,53 @@ export function useUsers() {
     }
   }, [page, pageSize, search, searchField, sortField, sortOrder]);
 
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
-
-  const createUser = useCallback(async (data: { name: string; email: string; age?: number; role?: string }) => {
-    await usersAPI.create(data);
+  useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  const updateUser = useCallback(async (id: number, data: { name?: string; email?: string; age?: number; role?: string }) => {
-    await usersAPI.update(id, data);
-    fetchUsers();
-  }, [fetchUsers]);
+  const createUser = useCallback(
+    async (data: { name: string; email: string; age?: number; role?: string }) => {
+      await usersAPI.create(data);
+      fetchUsers();
+    },
+    [fetchUsers],
+  );
 
-  const deleteUser = useCallback(async (id: number) => {
-    await usersAPI.delete(id);
-    fetchUsers();
-  }, [fetchUsers]);
+  const updateUser = useCallback(
+    async (id: number, data: { name?: string; email?: string; age?: number; role?: string }) => {
+      await usersAPI.update(id, data);
+      fetchUsers();
+    },
+    [fetchUsers],
+  );
+
+  const deleteUser = useCallback(
+    async (id: number) => {
+      await usersAPI.delete(id);
+      fetchUsers();
+    },
+    [fetchUsers],
+  );
 
   return {
-    users, loading, total,
-    page, pageSize, search, searchField, sortField, sortOrder,
-    setPage, setPageSize, setSearch, setSearchField, setSortField, setSortOrder,
-    fetchUsers, createUser, updateUser, deleteUser,
+    users,
+    loading,
+    total,
+    page,
+    pageSize,
+    search,
+    searchField,
+    sortField,
+    sortOrder,
+    setPage,
+    setPageSize,
+    setSearch,
+    setSearchField,
+    setSortField,
+    setSortOrder,
+    fetchUsers,
+    createUser,
+    updateUser,
+    deleteUser,
   };
 }

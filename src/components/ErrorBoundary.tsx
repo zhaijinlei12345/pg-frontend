@@ -22,12 +22,24 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-page)' }}>
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--bg-page)',
+          }}
+        >
           <Result
             status="error"
             title="页面出错了"
             subTitle={this.state.error?.message}
-            extra={<Button type="primary" onClick={this.handleReset}>返回首页</Button>}
+            extra={
+              <Button type="primary" onClick={this.handleReset}>
+                返回首页
+              </Button>
+            }
           />
         </div>
       );

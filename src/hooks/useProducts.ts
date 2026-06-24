@@ -25,15 +25,40 @@ export function useProducts() {
     }
   }, [page, pageSize, search, category, status]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  const create = async (data: any) => { await productsAPI.create(data); fetch(); };
-  const update = async (id: number, data: any) => { await productsAPI.update(id, data); fetch(); };
-  const remove = async (id: number) => { await productsAPI.delete(id); fetch(); };
+  const create = async (data: any) => {
+    await productsAPI.create(data);
+    fetch();
+  };
+  const update = async (id: number, data: any) => {
+    await productsAPI.update(id, data);
+    fetch();
+  };
+  const remove = async (id: number) => {
+    await productsAPI.delete(id);
+    fetch();
+  };
 
   return {
-    products, loading, total, page, pageSize, search, category, status,
-    setPage, setPageSize, setSearch, setCategory, setStatus,
-    fetch, create, update, remove,
+    products,
+    loading,
+    total,
+    page,
+    pageSize,
+    search,
+    category,
+    status,
+    setPage,
+    setPageSize,
+    setSearch,
+    setCategory,
+    setStatus,
+    fetch,
+    create,
+    update,
+    remove,
   };
 }

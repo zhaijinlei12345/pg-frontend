@@ -15,9 +15,9 @@ import { usePermission } from '../context/AuthContext';
 
 export function usePerms(module: 'users' | 'products' | 'orders' | 'audit' | 'dict' | 'dashboard') {
   const checks: Record<string, boolean> = {};
-  checks.canView   = usePermission(`${module}.view`);
-  checks.canRead   = usePermission(`${module}.read`);
-  checks.canWrite  = usePermission(`${module}.write`);
+  checks.canView = usePermission(`${module}.view`);
+  checks.canRead = usePermission(`${module}.read`);
+  checks.canWrite = usePermission(`${module}.write`);
   checks.canManage = usePermission(`${module}.manage`);
   checks.canDelete = usePermission(`${module}.delete`);
 

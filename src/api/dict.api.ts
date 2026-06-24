@@ -32,26 +32,22 @@ export interface DictData {
 
 export const dictAPI = {
   // 快捷接口
-  get: (code: string) =>
-    client.get<{ success: boolean; data: DictData }>(`/dict/${code}`),
+  get: (code: string) => client.get<{ success: boolean; data: DictData }>(`/dict/${code}`),
 
   // 类型
-  listTypes: () =>
-    client.get<{ success: boolean; data: DictType[] }>('/dict-types'),
-  createType: (data: { code: string; name: string; description?: string }) =>
-    client.post('/dict-types', data),
-  updateType: (code: string, data: { name?: string; description?: string }) =>
-    client.put(`/dict-types/${code}`, data),
-  deleteType: (code: string) =>
-    client.delete(`/dict-types/${code}`),
+  listTypes: () => client.get<{ success: boolean; data: DictType[] }>('/dict-types'),
+  createType: (data: { code: string; name: string; description?: string }) => client.post('/dict-types', data),
+  updateType: (code: string, data: { name?: string; description?: string }) => client.put(`/dict-types/${code}`, data),
+  deleteType: (code: string) => client.delete(`/dict-types/${code}`),
 
   // 条目
-  listEntries: (code: string) =>
-    client.get<{ success: boolean; data: DictEntry[] }>(`/dict-types/${code}/entries`),
+  listEntries: (code: string) => client.get<{ success: boolean; data: DictEntry[] }>(`/dict-types/${code}/entries`),
   createEntry: (code: string, data: { key: string; label: string; color?: string; sort_order?: number }) =>
     client.post(`/dict-types/${code}/entries`, data),
-  updateEntry: (code: string, key: string, data: { label?: string; color?: string; sort_order?: number; enabled?: boolean }) =>
-    client.put(`/dict-types/${code}/entries/${key}`, data),
-  deleteEntry: (code: string, key: string) =>
-    client.delete(`/dict-types/${code}/entries/${key}`),
+  updateEntry: (
+    code: string,
+    key: string,
+    data: { label?: string; color?: string; sort_order?: number; enabled?: boolean },
+  ) => client.put(`/dict-types/${code}/entries/${key}`, data),
+  deleteEntry: (code: string, key: string) => client.delete(`/dict-types/${code}/entries/${key}`),
 };

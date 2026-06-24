@@ -39,11 +39,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // 拉取权限
   const loadPermissions = useCallback(async () => {
-    if (!token) { setPermissions([]); return; }
+    if (!token) {
+      setPermissions([]);
+      return;
+    }
     try {
       const res = await authAPI.permissions();
       setPermissions(res.data.data.permissions || []);
-    } catch { setPermissions([]); }
+    } catch {
+      setPermissions([]);
+    }
   }, [token]);
 
   const login = async (email: string, password: string) => {
@@ -75,24 +80,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!token) return;
     Promise.all([
-      authAPI.me().then(res => {
-        if (res.data?.data) {
-          const { user: freshUser, token: freshToken } = res.data.data;
-          setUser(freshUser);
-          setToken(freshToken);
-        }
-      }).catch(() => {}),
+      authAPI
+        .me()
+        .then((res) => {
+          if (res.data?.data) {
+            const { user: freshUser, token: freshToken } = res.data.data;
+            setUser(freshUser);
+            setToken(freshToken);
+          }
+        })
+        .catch(() => {}),
       loadPermissions(),
     ]).finally(() => setReady(true));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // token 变化时重新拉权限
-  useEffect(() => { loadPermissions(); }, [token, loadPermissions]);
+  useEffect(() => {
+    loadPermissions();
+  }, [token, loadPermissions]);
 
   if (!ready) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-page)', gap: 20 }}>
-        <div style={{ width: 40, height: 40, border: '3px solid rgba(99,102,241,0.2)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'var(--bg-page)',
+          gap: 20,
+        }}
+      >
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            border: '3px solid rgba(99,102,241,0.2)',
+            borderTopColor: '#6366f1',
+            borderRadius: '50%',
+            animation: 'spin 0.8s linear infinite',
+          }}
+        />
         <span style={{ color: '#6b7280', fontSize: 14, letterSpacing: 1 }}>加载中</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
@@ -100,7 +129,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, permissions, isAuthenticated: !!token, login, register, logout, updateAuth }}>
+    <AuthContext.Provider
+      value={{ token, user, permissions, isAuthenticated: !!token, login, register, logout, updateAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );

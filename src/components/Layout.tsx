@@ -1,9 +1,17 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Tag, Select } from 'antd';
 import {
-  UserOutlined, TeamOutlined, LogoutOutlined, ThunderboltOutlined,
-  FileTextOutlined, BookOutlined, DashboardOutlined, ShoppingOutlined,
-  OrderedListOutlined, GlobalOutlined, BulbOutlined,
+  UserOutlined,
+  TeamOutlined,
+  LogoutOutlined,
+  ThunderboltOutlined,
+  FileTextOutlined,
+  BookOutlined,
+  DashboardOutlined,
+  ShoppingOutlined,
+  OrderedListOutlined,
+  GlobalOutlined,
+  BulbOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -24,15 +32,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const perm = usePerms('audit');
   const dictPerm = usePerms('dict');
 
-  const roleEntry = roleDict?.entries.find(e => e.key === user?.role);
+  const roleEntry = roleDict?.entries.find((e) => e.key === user?.role);
   const roleLabel = roleEntry?.label || user?.role || '用户';
   const roleColor = roleEntry?.color || 'default';
 
   const menuItems = [
-    { key: ROUTES.DASHBOARD, icon: <DashboardOutlined />,  label: t('menu.dashboard') },
-    { key: ROUTES.USERS,     icon: <TeamOutlined />,       label: t('menu.users') },
-    { key: ROUTES.PRODUCTS,  icon: <ShoppingOutlined />,   label: t('menu.products') },
-    { key: ROUTES.ORDERS,    icon: <OrderedListOutlined />, label: t('menu.orders') },
+    { key: ROUTES.DASHBOARD, icon: <DashboardOutlined />, label: t('menu.dashboard') },
+    { key: ROUTES.USERS, icon: <TeamOutlined />, label: t('menu.users') },
+    { key: ROUTES.PRODUCTS, icon: <ShoppingOutlined />, label: t('menu.products') },
+    { key: ROUTES.ORDERS, icon: <OrderedListOutlined />, label: t('menu.orders') },
     ...(perm.canRead ? [{ key: ROUTES.AUDIT_LOGS, icon: <FileTextOutlined />, label: t('menu.audit') }] : []),
     ...(dictPerm.canManage ? [{ key: ROUTES.DICT, icon: <BookOutlined />, label: t('menu.dict') }] : []),
   ];
@@ -69,7 +77,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <Select
             size="small"
             value={i18n.language}
-            onChange={lang => i18n.changeLanguage(lang)}
+            onChange={(lang) => i18n.changeLanguage(lang)}
             style={{ width: '100%' }}
             suffixIcon={<GlobalOutlined />}
             options={[
@@ -95,19 +103,44 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           theme={mode}
         />
 
-        <div style={{
-          position: 'absolute', bottom: 16, left: 16, right: 16,
-          padding: '12px 16px',
-          background: mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
-          borderRadius: 10,
-          display: 'flex', alignItems: 'center', gap: 10,
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 16,
+            left: 16,
+            right: 16,
+            padding: '12px 16px',
+            background: mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
+            borderRadius: 10,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
           <Avatar icon={<UserOutlined />} style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: mode === 'dark' ? '#e1e4ed' : '#333', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: mode === 'dark' ? '#e1e4ed' : '#333',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
               {user?.name}
             </div>
-            <div style={{ fontSize: 11, color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 2 }}>
+            <div
+              style={{
+                fontSize: 11,
+                color: '#6b7280',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                marginBottom: 2,
+              }}
+            >
               {user?.email}
             </div>
             <Tag color={roleColor} style={{ fontSize: 10, lineHeight: '16px' }}>
@@ -115,14 +148,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Tag>
           </div>
           <Dropdown menu={userMenu} placement="topRight" trigger={['click']}>
-            <Button type="text" size="small" icon={<LogoutOutlined />} style={{ color: mode === 'dark' ? '#9ca3af' : '#666' }} />
+            <Button
+              type="text"
+              size="small"
+              icon={<LogoutOutlined />}
+              style={{ color: mode === 'dark' ? '#9ca3af' : '#666' }}
+            />
           </Dropdown>
         </div>
       </Sider>
 
-      <Content style={{ padding: '32px 40px', overflow: 'auto' }}>
-        {children}
-      </Content>
+      <Content style={{ padding: '32px 40px', overflow: 'auto' }}>{children}</Content>
     </AntLayout>
   );
 }

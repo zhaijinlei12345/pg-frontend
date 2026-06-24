@@ -25,11 +25,12 @@ export interface ProductListParams {
 
 export const productsAPI = {
   list: (params: ProductListParams) =>
-    client.get<{ success: boolean; data: Product[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>('/products', { params }),
-  create: (data: Partial<Product>) =>
-    client.post('/products', data),
-  update: (id: number, data: Partial<Product>) =>
-    client.put(`/products/${id}`, data),
-  delete: (id: number) =>
-    client.delete(`/products/${id}`),
+    client.get<{
+      success: boolean;
+      data: Product[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>('/products', { params }),
+  create: (data: Partial<Product>) => client.post('/products', data),
+  update: (id: number, data: Partial<Product>) => client.put(`/products/${id}`, data),
+  delete: (id: number) => client.delete(`/products/${id}`),
 };

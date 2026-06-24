@@ -24,15 +24,38 @@ export function useOrders() {
     }
   }, [page, pageSize, status, search]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => {
+    fetch();
+  }, [fetch]);
 
-  const create = async (data: any) => { await ordersAPI.create(data); fetch(); };
-  const updateStatus = async (id: number, s: string) => { await ordersAPI.updateStatus(id, s); fetch(); };
-  const remove = async (id: number) => { await ordersAPI.delete(id); fetch(); };
+  const create = async (data: any) => {
+    await ordersAPI.create(data);
+    fetch();
+  };
+  const updateStatus = async (id: number, s: string) => {
+    await ordersAPI.updateStatus(id, s);
+    fetch();
+  };
+  const remove = async (id: number) => {
+    await ordersAPI.delete(id);
+    fetch();
+  };
 
   return {
-    orders, loading, total, page, pageSize, status, search,
-    setPage, setPageSize, setStatus, setSearch,
-    fetch, create, updateStatus, remove,
+    orders,
+    loading,
+    total,
+    page,
+    pageSize,
+    status,
+    search,
+    setPage,
+    setPageSize,
+    setStatus,
+    setSearch,
+    fetch,
+    create,
+    updateStatus,
+    remove,
   };
 }

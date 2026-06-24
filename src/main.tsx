@@ -42,5 +42,5 @@ function Root() {
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider>
     <Root />
-  </ThemeProvider>
+  </ThemeProvider>,
 );

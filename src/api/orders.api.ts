@@ -23,11 +23,13 @@ export interface Order {
 
 export const ordersAPI = {
   list: (params: { page?: number; limit?: number; status?: string; search?: string }) =>
-    client.get<{ success: boolean; data: Order[]; pagination: { page: number; limit: number; total: number; totalPages: number } }>('/orders', { params }),
+    client.get<{
+      success: boolean;
+      data: Order[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>('/orders', { params }),
   create: (data: Partial<Order> & { items: { product_name: string; quantity: number; unit_price: number }[] }) =>
     client.post('/orders', data),
-  updateStatus: (id: number, status: string) =>
-    client.put(`/orders/${id}/status`, { status }),
-  delete: (id: number) =>
-    client.delete(`/orders/${id}`),
+  updateStatus: (id: number, status: string) => client.put(`/orders/${id}/status`, { status }),
+  delete: (id: number) => client.delete(`/orders/${id}`),
 };
