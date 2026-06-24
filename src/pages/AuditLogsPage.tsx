@@ -1,17 +1,20 @@
-import { Select, Typography, Card, App, Table } from 'antd';
+import { Select, Typography, Card, App, Table, Tag } from 'antd';
 import type { AuditLog } from '../api/auditLogs.api';
 import type { ColumnsType } from 'antd/es/table';
 import { useAuditLogs } from '../hooks/useAuditLogs';
+import { useDictData } from '../hooks/useDict';
 
 const { Title } = Typography;
 
-function actionTag(a: string) {
-  const map: Record<string, string> = { CREATE: '#10b981', UPDATE: '#3b82f6', DELETE: '#ef4444' };
-  return <span style={{ color: map[a] || '#999', fontWeight: 600, fontSize: 13 }}>{a}</span>;
-}
-
 export default function AuditLogsPage() {
   const { message: msg } = App.useApp();
+  const { data: actionDict } = useDictData('audit_action');
+
+  function actionTag(a: string) {
+    const e = actionDict?.entries.find(x => x.key === a);
+    return <Tag color={e?.color}>{e?.label || a}</Tag>;
+  }
+
   const {
     logs, loading, total,
     page, pageSize, actionFilter,
@@ -49,11 +52,7 @@ export default function AuditLogsPage() {
             style={{ width: 130 }}
             allowClear
             placeholder="全部操作"
-            options={[
-              { value: 'CREATE', label: '创建' },
-              { value: 'UPDATE', label: '更新' },
-              { value: 'DELETE', label: '删除' },
-            ]}
+            options={(actionDict?.entries || []).map(e => ({ value: e.key, label: e.label }))}
           />
         </div>
         <Table
@@ -61,6 +60,7 @@ export default function AuditLogsPage() {
           dataSource={logs}
           rowKey="id"
           loading={loading}
+          scroll={{ x: 900 }}
           pagination={{
             current: page,
             pageSize,

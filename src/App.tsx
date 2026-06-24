@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import LoginPage from './pages/LoginPage';
 import UsersPage from './pages/UsersPage';
 import AuditLogsPage from './pages/AuditLogsPage';
+import DictPage from './pages/DictPage';
 import { ROUTES } from './routes';
 
 function RequireAuth() {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
     children: [
       { path: ROUTES.USERS, element: <UsersPage /> },
       { path: ROUTES.AUDIT_LOGS, element: <AuditLogsPage /> },
+      { path: ROUTES.DICT, element: <DictPage /> },
     ],
   },
   { path: '*', element: <Navigate to={ROUTES.USERS} replace /> },

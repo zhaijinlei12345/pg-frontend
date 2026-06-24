@@ -6,32 +6,26 @@ import type { SorterResult } from 'antd/es/table/interface';
 import type { User } from '../api/users.api';
 import { useAuth } from '../context/AuthContext';
 import { useUsers } from '../hooks/useUsers';
+import { useDictData } from '../hooks/useDict';
+import DictSelect from '../components/DictSelect';
 
 const { Title } = Typography;
 
-const ROLES = {
-  ADMIN: 'admin',
-  LEADER: 'leader',
-  USER: 'user',
-} as const;
-
-function roleTag(r: string) {
-  const map: Record<string, { color: string; label: string }> = {
-    admin: { color: 'purple', label: '管理员' },
-    leader: { color: 'blue', label: '组长' },
-    user: { color: 'default', label: '用户' },
-  };
-  const t = map[r] || map.user;
-  return <Tag color={t.color}>{t.label}</Tag>;
-}
-
 export default function UsersPage() {
   const { isAuthenticated, user } = useAuth();
-  const role = user?.role || ROLES.USER;
-  const canEdit = role === ROLES.ADMIN || role === ROLES.LEADER;
-  const canDelete = role === ROLES.ADMIN;
-  const canChangeRole = role === ROLES.ADMIN;
+  const { data: roleDict } = useDictData('role');
+
+  const role = user?.role || 'user';
+  const canEdit = role === 'admin' || role === 'leader';
+  const canDelete = role === 'admin';
+  const canChangeRole = role === 'admin';
   const { message: msg } = App.useApp();
+
+  // 从字典获取角色标签和颜色
+  function roleTag(r: string) {
+    const e = roleDict?.entries.find(x => x.key === r);
+    return <Tag color={e?.color || 'default'}>{e?.label || r}</Tag>;
+  }
 
   const {
     users, loading, total,
@@ -117,7 +111,7 @@ export default function UsersPage() {
     { title: '角色', dataIndex: 'role', key: 'role', width: 90, render: roleTag },
     { title: '创建时间', dataIndex: 'created_at', key: 'created_at', width: 170, sorter: true, sortOrder: sortField === 'created_at' ? sortOrder : undefined, render: (v: string) => new Date(v).toLocaleString('zh-CN') },
     ...(canEdit ? [{
-      title: '操作', key: 'action', width: 150,
+      title: '操作', key: 'action', width: 160, fixed: 'right' as const,
       render: (_: any, record: User) => (
         <Space>
           <Button type="link" size="small" onClick={() => openEdit(record)}>编辑</Button>
@@ -188,6 +182,7 @@ export default function UsersPage() {
           dataSource={users}
           rowKey="id"
           loading={loading}
+          scroll={{ x: 1100 }}
           onChange={handleTableChange}
           pagination={{
             current: page,
@@ -226,14 +221,7 @@ export default function UsersPage() {
           </Form.Item>
           {canChangeRole && (
             <Form.Item name="role" label="角色">
-              <Select
-                options={[
-                  { value: ROLES.USER, label: '用户' },
-                  { value: ROLES.LEADER, label: '组长' },
-                  { value: ROLES.ADMIN, label: '管理员' },
-                ]}
-                placeholder="选择角色"
-              />
+              <DictSelect dictCode="role" />
             </Form.Item>
           )}
         </Form>

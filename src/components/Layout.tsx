@@ -2,25 +2,26 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Tag } from 'antd';
 import {
   UserOutlined, TeamOutlined, LogoutOutlined, ThunderboltOutlined,
-  FileTextOutlined,
+  FileTextOutlined, BookOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
+import { useDictData } from '../hooks/useDict';
 import { ROUTES } from '../routes';
 
 const { Sider, Content } = AntLayout;
-
-const ROLES = {
-  ADMIN: 'admin',
-  LEADER: 'leader',
-  USER: 'user',
-} as const;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { data: roleDict } = useDictData('role');
 
-  const isAdmin = user?.role === ROLES.ADMIN;
+  const isAdmin = user?.role === 'admin';
+
+  // 从字典获取角色标签和颜色
+  const roleEntry = roleDict?.entries.find(e => e.key === user?.role);
+  const roleLabel = roleEntry?.label || user?.role || '用户';
+  const roleColor = roleEntry?.color || 'default';
 
   const menuItems = [
     {
@@ -28,11 +29,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: <TeamOutlined />,
       label: '用户管理',
     },
-    ...(isAdmin ? [{
-      key: ROUTES.AUDIT_LOGS,
-      icon: <FileTextOutlined />,
-      label: '操作日志',
-    }] : []),
+    ...(isAdmin ? [
+      {
+        key: ROUTES.AUDIT_LOGS,
+        icon: <FileTextOutlined />,
+        label: '操作日志',
+      },
+      {
+        key: ROUTES.DICT,
+        icon: <BookOutlined />,
+        label: '数据字典',
+      },
+    ] : []),
   ];
 
   const userMenu = {
@@ -43,9 +51,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       if (key === 'logout') logout();
     },
   };
-
-  const roleLabel = user?.role === ROLES.ADMIN ? '管理员' : user?.role === ROLES.LEADER ? '组长' : '用户';
-  const roleColor = user?.role === ROLES.ADMIN ? 'purple' : user?.role === ROLES.LEADER ? 'blue' : 'default';
 
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
