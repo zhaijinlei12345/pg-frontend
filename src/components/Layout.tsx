@@ -1,69 +1,45 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Tag } from 'antd';
+import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Tag, Select } from 'antd';
 import {
   UserOutlined, TeamOutlined, LogoutOutlined, ThunderboltOutlined,
   FileTextOutlined, BookOutlined, DashboardOutlined, ShoppingOutlined,
-  OrderedListOutlined,
+  OrderedListOutlined, GlobalOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { usePerms } from '../hooks/usePerms';
 import { useDictData } from '../hooks/useDict';
 import { ROUTES } from '../routes';
 
 const { Sider, Content } = AntLayout;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { data: roleDict } = useDictData('role');
+  const perm = usePerms('audit');
+  const dictPerm = usePerms('dict');
 
-  const isAdmin = user?.role === 'admin';
-
-  // 从字典获取角色标签和颜色
   const roleEntry = roleDict?.entries.find(e => e.key === user?.role);
   const roleLabel = roleEntry?.label || user?.role || '用户';
   const roleColor = roleEntry?.color || 'default';
 
   const menuItems = [
-    {
-      key: ROUTES.DASHBOARD,
-      icon: <DashboardOutlined />,
-      label: '仪表盘',
-    },
-    {
-      key: ROUTES.USERS,
-      icon: <TeamOutlined />,
-      label: '用户管理',
-    },
-    {
-      key: ROUTES.PRODUCTS,
-      icon: <ShoppingOutlined />,
-      label: '商品管理',
-    },
-    {
-      key: ROUTES.ORDERS,
-      icon: <OrderedListOutlined />,
-      label: '订单管理',
-    },
-    ...(isAdmin ? [
-      {
-        key: ROUTES.AUDIT_LOGS,
-        icon: <FileTextOutlined />,
-        label: '操作日志',
-      },
-      {
-        key: ROUTES.DICT,
-        icon: <BookOutlined />,
-        label: '数据字典',
-      },
-    ] : []),
+    { key: ROUTES.DASHBOARD, icon: <DashboardOutlined />,  label: t('menu.dashboard') },
+    { key: ROUTES.USERS,     icon: <TeamOutlined />,       label: t('menu.users') },
+    { key: ROUTES.PRODUCTS,  icon: <ShoppingOutlined />,   label: t('menu.products') },
+    { key: ROUTES.ORDERS,    icon: <OrderedListOutlined />, label: t('menu.orders') },
+    ...(perm.canRead ? [{ key: ROUTES.AUDIT_LOGS, icon: <FileTextOutlined />, label: t('menu.audit') }] : []),
+    ...(dictPerm.canManage ? [{ key: ROUTES.DICT, icon: <BookOutlined />, label: t('menu.dict') }] : []),
   ];
 
   const userMenu = {
     items: [
-      { key: 'profile', icon: <UserOutlined />, label: '个人中心' },
+      { key: 'profile', icon: <UserOutlined />, label: t('user.profile') },
       { type: 'divider' as const },
-      { key: 'logout', icon: <LogoutOutlined />, label: '退出登录', danger: true },
+      { key: 'logout', icon: <LogoutOutlined />, label: t('user.logout'), danger: true },
     ],
     onClick: ({ key }: { key: string }) => {
       if (key === 'profile') navigate(ROUTES.PROFILE);
@@ -83,7 +59,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       >
         <div className="sidebar-logo">
           <ThunderboltOutlined style={{ color: '#6366f1', fontSize: 22 }} />
-          Admin Panel
+          {t('app.title')}
+        </div>
+
+        {/* 语言切换 */}
+        <div style={{ padding: '0 24px 12px' }}>
+          <Select
+            size="small"
+            value={i18n.language}
+            onChange={lang => i18n.changeLanguage(lang)}
+            style={{ width: '100%' }}
+            suffixIcon={<GlobalOutlined />}
+            options={[
+              { value: 'zh-CN', label: '🇨🇳 中文' },
+              { value: 'en-US', label: '🇺🇸 English' },
+            ]}
+          />
         </div>
 
         <Menu
@@ -91,11 +82,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={({ key }) => navigate(key)}
-          style={{
-            background: 'transparent',
-            borderInlineEnd: 'none',
-            marginTop: 8,
-          }}
+          style={{ background: 'transparent', borderInlineEnd: 'none', flex: 1, overflow: 'auto' }}
           theme="dark"
         />
 

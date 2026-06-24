@@ -1,4 +1,5 @@
 import { Typography, Statistic, Row, Col, Card, Progress, Table, Tag, Spin } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { UserOutlined, PieChartOutlined, RiseOutlined, FileTextOutlined, ShoppingOutlined, OrderedListOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { useDashboard } from '../hooks/useDashboard';
@@ -36,6 +37,7 @@ function BarChart({ data }: { data: { date: string; count: string }[] }) {
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const { stats, loading } = useDashboard();
   const { data: roleDict } = useDictData('role');
   const { data: actionDict } = useDictData('audit_action');
@@ -68,45 +70,45 @@ export default function DashboardPage() {
   return (
     <div className="page-transition">
       <div style={{ marginBottom: 24 }}>
-        <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>📊 仪表盘</Title>
-        <Text type="secondary">系统运行数据概览</Text>
+        <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>{t('dashboard.title')}</Title>
+        <Text type="secondary">{t("dashboard.desc")}</Text>
       </div>
 
       {/* 统计卡片 */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={12} sm={4}>
           <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
-            <Statistic title="用户总数" value={stats?.totalUsers || 0} prefix={<UserOutlined />}
+            <Statistic title={t("dashboard.totalUsers")} value={stats?.totalUsers || 0} prefix={<UserOutlined />}
               valueStyle={{ color: '#6366f1' }} />
           </Card>
         </Col>
         <Col xs={12} sm={4}>
           <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
-            <Statistic title="今日新增" value={today} prefix={<RiseOutlined />}
+            <Statistic title={t("dashboard.todayNew")} value={today} prefix={<RiseOutlined />}
               valueStyle={{ color: '#10b981' }} />
           </Card>
         </Col>
         <Col xs={12} sm={4}>
           <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
-            <Statistic title="商品数量" value={stats?.totalProducts || 0} prefix={<ShoppingOutlined />}
+            <Statistic title={t("dashboard.totalProducts")} value={stats?.totalProducts || 0} prefix={<ShoppingOutlined />}
               valueStyle={{ color: '#f59e0b' }} />
           </Card>
         </Col>
         <Col xs={12} sm={4}>
           <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
-            <Statistic title="订单数量" value={stats?.totalOrders || 0} prefix={<OrderedListOutlined />}
+            <Statistic title={t("dashboard.totalOrders")} value={stats?.totalOrders || 0} prefix={<OrderedListOutlined />}
               valueStyle={{ color: '#8b5cf6' }} />
           </Card>
         </Col>
         <Col xs={12} sm={4}>
           <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
-            <Statistic title="近7天新增" value={weekTotal} prefix={<RiseOutlined />}
+            <Statistic title={t("dashboard.weekNew")} value={weekTotal} prefix={<RiseOutlined />}
               valueStyle={{ color: '#ec4899' }} />
           </Card>
         </Col>
         <Col xs={12} sm={4}>
           <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
-            <Statistic title="操作日志" value={stats?.recentLogs?.length || 0} prefix={<FileTextOutlined />}
+            <Statistic title={t("dashboard.recentLogs")} value={stats?.recentLogs?.length || 0} prefix={<FileTextOutlined />}
               valueStyle={{ color: '#ef4444' }} suffix="条" />
           </Card>
         </Col>
@@ -115,7 +117,7 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         {/* 角色分布 */}
         <Col xs={24} md={8}>
-          <Card title={<span><PieChartOutlined /> 角色分布</span>}
+          <Card title={<span><PieChartOutlined /> {t('dashboard.roleDist')}</span>}
             style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
             {roleDist.map(r => {
               const entry = roleDict?.entries.find(e => e.key === r.role);
@@ -137,7 +139,7 @@ export default function DashboardPage() {
 
         {/* 订单状态分布 */}
         <Col xs={24} md={8}>
-          <Card title={<span><OrderedListOutlined /> 订单状态</span>}
+          <Card title={<span><OrderedListOutlined /> {t('dashboard.orderStatus')}</span>}
             style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
             {(stats?.orderStatusDistribution || []).map(s => {
               const entry = statusDict?.entries.find(e => e.key === s.status);
@@ -160,7 +162,7 @@ export default function DashboardPage() {
 
         {/* 近7天趋势 */}
         <Col xs={24} md={8}>
-          <Card title={<span><RiseOutlined /> 近7天新增用户趋势</span>}
+          <Card title={<span><RiseOutlined /> {t('dashboard.trend')}</span>}
             style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
             <BarChart data={trend} />
           </Card>
@@ -168,7 +170,7 @@ export default function DashboardPage() {
       </Row>
 
       {/* 最近操作 */}
-      <Card title={<span><FileTextOutlined /> 最近操作</span>}
+      <Card title={<span><FileTextOutlined /> {t('dashboard.recentOps')}</span>}
         style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
         <Table
           columns={logColumns}

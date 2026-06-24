@@ -9,6 +9,8 @@ export const authAPI = {
     client.post('/auth/login', data),
   me: () =>
     client.get<{ success: boolean; data: { user: User; token: string } }>('/auth/me'),
+  permissions: () =>
+    client.get<{ success: boolean; data: { role: string; permissions: string[] } }>('/auth/permissions'),
   changePassword: (data: { oldPassword: string; newPassword: string }) =>
     client.put('/auth/password', data),
   updateProfile: (data: { name?: string; email?: string; age?: number }) =>

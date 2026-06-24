@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { authAPI } from '../api/auth.api';
 import type { User } from '../api/users.api';
@@ -6,6 +6,7 @@ import type { User } from '../api/users.api';
 interface AuthState {
   token: string | null;
   user: User | null;
+  permissions: string[];
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, age?: number) => Promise<void>;
@@ -21,25 +22,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const raw = localStorage.getItem('user');
     return raw ? JSON.parse(raw) : null;
   });
-  const [ready, setReady] = useState(!localStorage.getItem('token')); // 无 token 直接 ready
+  const [permissions, setPermissions] = useState<string[]>([]);
+  const [ready, setReady] = useState(!localStorage.getItem('token'));
 
   // 同步 token 到 localStorage
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
-    }
+    if (token) localStorage.setItem('token', token);
+    else localStorage.removeItem('token');
   }, [token]);
 
   // 同步 user 到 localStorage
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
+    if (user) localStorage.setItem('user', JSON.stringify(user));
+    else localStorage.removeItem('user');
   }, [user]);
+
+  // 拉取权限
+  const loadPermissions = useCallback(async () => {
+    if (!token) { setPermissions([]); return; }
+    try {
+      const res = await authAPI.permissions();
+      setPermissions(res.data.data.permissions || []);
+    } catch { setPermissions([]); }
+  }, [token]);
 
   const login = async (email: string, password: string) => {
     const res = await authAPI.login({ email, password });
@@ -63,21 +68,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setToken(null);
     setUser(null);
+    setPermissions([]);
   };
 
-  // 每次刷新页面都从后端拉取最新角色 + 新 token，完成前阻塞页面渲染
+  // 启动时刷新用户信息 + 权限
   useEffect(() => {
     if (!token) return;
-    authAPI.me().then(res => {
-      if (res.data?.data) {
-        const { user: freshUser, token: freshToken } = res.data.data;
-        setUser(freshUser);
-        setToken(freshToken);
-      }
-    }).catch(() => {}).finally(() => {
-      setReady(true);
-    });
+    Promise.all([
+      authAPI.me().then(res => {
+        if (res.data?.data) {
+          const { user: freshUser, token: freshToken } = res.data.data;
+          setUser(freshUser);
+          setToken(freshToken);
+        }
+      }).catch(() => {}),
+      loadPermissions(),
+    ]).finally(() => setReady(true));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // token 变化时重新拉权限
+  useEffect(() => { loadPermissions(); }, [token, loadPermissions]);
 
   if (!ready) {
     return (
@@ -90,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, login, register, logout, updateAuth }}>
+    <AuthContext.Provider value={{ token, user, permissions, isAuthenticated: !!token, login, register, logout, updateAuth }}>
       {children}
     </AuthContext.Provider>
   );
@@ -100,4 +110,13 @@ export function useAuth(): AuthState {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
+}
+
+/**
+ * 权限判断 hook
+ * 用法: const canDelete = usePermission('users.delete')
+ */
+export function usePermission(permission: string): boolean {
+  const { permissions } = useAuth();
+  return permissions.includes('*') || permissions.includes(permission);
 }
