@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { authAPI } from '../api/client';
-import type { User } from '../api/client';
+import { authAPI } from '../api/auth.api';
+import type { User } from '../api/users.api';
 
 interface AuthState {
   token: string | null;
@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const raw = localStorage.getItem('user');
     return raw ? JSON.parse(raw) : null;
   });
+  const [ready, setReady] = useState(!localStorage.getItem('token')); // 无 token 直接 ready
 
   // 同步 token 到 localStorage
   useEffect(() => {
@@ -57,6 +58,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUser(null);
   };
+
+  // 每次刷新页面都从后端拉取最新角色 + 新 token，完成前阻塞页面渲染
+  useEffect(() => {
+    if (!token) return;
+    authAPI.me().then(res => {
+      if (res.data?.data) {
+        const { user: freshUser, token: freshToken } = res.data.data;
+        setUser(freshUser);
+        setToken(freshToken);
+      }
+    }).catch(() => {}).finally(() => {
+      setReady(true);
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!ready) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0f1119', gap: 20 }}>
+        <div style={{ width: 40, height: 40, border: '3px solid rgba(99,102,241,0.2)', borderTopColor: '#6366f1', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <span style={{ color: '#6b7280', fontSize: 14, letterSpacing: 1 }}>加载中</span>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, login, register, logout }}>

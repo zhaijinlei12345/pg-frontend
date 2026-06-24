@@ -32,3 +32,26 @@ body {
   color: #a5b4fc;
   gap: 8px;
 }
+
+/* 页面切换动画 */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-transition {
+  animation: pageIn 0.3s ease;
+}
+
+/* 卡片入场 */
+@keyframes cardIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+.ant-card { animation: cardIn 0.35s ease; }
+
+/* 表格入场 */
+@keyframes tableIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ant-table-wrapper { animation: tableIn 0.4s ease; }

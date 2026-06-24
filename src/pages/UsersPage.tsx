@@ -1,27 +1,44 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Modal, Form, Input, Select, Space, Popconfirm, Typography, Statistic, Row, Col, Card, App } from 'antd';
+import { useState } from 'react';
+import { Table, Button, Modal, Form, Input, Select, Space, Popconfirm, Typography, Statistic, Row, Col, Card, App, Tag } from 'antd';
 import { PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import type { SorterResult } from 'antd/es/table/interface';
-import { usersAPI } from '../api/client';
-import type { User } from '../api/client';
+import type { User } from '../api/users.api';
 import { useAuth } from '../context/AuthContext';
+import { useUsers } from '../hooks/useUsers';
 
 const { Title } = Typography;
 
+const ROLES = {
+  ADMIN: 'admin',
+  LEADER: 'leader',
+  USER: 'user',
+} as const;
+
+function roleTag(r: string) {
+  const map: Record<string, { color: string; label: string }> = {
+    admin: { color: 'purple', label: '管理员' },
+    leader: { color: 'blue', label: '组长' },
+    user: { color: 'default', label: '用户' },
+  };
+  const t = map[r] || map.user;
+  return <Tag color={t.color}>{t.label}</Tag>;
+}
+
 export default function UsersPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const role = user?.role || ROLES.USER;
+  const canEdit = role === ROLES.ADMIN || role === ROLES.LEADER;
+  const canDelete = role === ROLES.ADMIN;
+  const canChangeRole = role === ROLES.ADMIN;
   const { message: msg } = App.useApp();
 
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [search, setSearch] = useState('');
-  const [searchField, setSearchField] = useState('all');
-  const [sortField, setSortField] = useState('id');
-  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | undefined>(undefined);
+  const {
+    users, loading, total,
+    page, pageSize, search, searchField, sortField, sortOrder,
+    setPage, setPageSize, setSearch, setSearchField, setSortField, setSortOrder,
+    fetchUsers, createUser, updateUser, deleteUser,
+  } = useUsers();
 
   // 弹窗
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,28 +46,6 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm();
-
-  const fetchUsers = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await usersAPI.list({
-        page,
-        limit: pageSize,
-        search,
-        searchField,
-        sort: sortField,
-        order: sortOrder === 'descend' ? 'desc' : 'asc',
-      });
-      setUsers(res.data.data);
-      setTotal(res.data.pagination.total);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, pageSize, search, searchField, sortField, sortOrder]);
-
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
   const handleTableChange = (
     pag: TablePaginationConfig,
@@ -77,33 +72,35 @@ export default function UsersPage() {
     setPage(1);
   };
 
-  // 弹窗
   const openCreate = () => {
     setModalMode('create');
     setEditingUser(null);
     form.resetFields();
     setModalOpen(true);
   };
-  const openEdit = (user: User) => {
+
+  const openEdit = (u: User) => {
     setModalMode('edit');
-    setEditingUser(user);
-    form.setFieldsValue({ name: user.name, email: user.email, age: user.age });
+    setEditingUser(u);
+    form.setFieldsValue({ name: u.name, email: u.email, age: u.age });
     setModalOpen(true);
   };
+
   const handleDelete = async (id: number) => {
-    try { await usersAPI.delete(id); msg.success('删除成功'); fetchUsers(); }
+    try { await deleteUser(id); msg.success('删除成功'); }
     catch { msg.error('删除失败'); }
   };
+
   const handleModalOk = async () => {
     try {
       const values = await form.validateFields();
       setSubmitting(true);
       const data = { ...values, age: values.age ? Number(values.age) : undefined };
       if (modalMode === 'create') {
-        await usersAPI.create(data);
+        await createUser(data);
         msg.success('新增成功');
       } else if (editingUser) {
-        await usersAPI.update(editingUser.id, data);
+        await updateUser(editingUser.id, data);
         msg.success('更新成功');
       }
       setModalOpen(false);
@@ -113,27 +110,22 @@ export default function UsersPage() {
   };
 
   const columns: ColumnsType<User> = [
-    { title: 'ID', dataIndex: 'id', key: 'id', width: 80, sorter: true, sortOrder: sortField === 'id' ? sortOrder : undefined },
+    { title: 'ID', dataIndex: 'id', key: 'id', width: 70, sorter: true, sortOrder: sortField === 'id' ? sortOrder : undefined },
     { title: '姓名', dataIndex: 'name', key: 'name', sorter: true, sortOrder: sortField === 'name' ? sortOrder : undefined },
     { title: '邮箱', dataIndex: 'email', key: 'email', sorter: true, sortOrder: sortField === 'email' ? sortOrder : undefined },
-    {
-      title: '年龄', dataIndex: 'age', key: 'age', width: 80, sorter: true,
-      sortOrder: sortField === 'age' ? sortOrder : undefined,
-      render: (v: number | null) => v ?? '-',
-    },
-    {
-      title: '创建时间', dataIndex: 'created_at', key: 'created_at', width: 180, sorter: true,
-      sortOrder: sortField === 'created_at' ? sortOrder : undefined,
-      render: (v: string) => new Date(v).toLocaleString('zh-CN'),
-    },
-    ...(isAuthenticated ? [{
-      title: '操作', key: 'action', width: 160,
+    { title: '年龄', dataIndex: 'age', key: 'age', width: 70, sorter: true, sortOrder: sortField === 'age' ? sortOrder : undefined, render: (v: number | null) => v ?? '-' },
+    { title: '角色', dataIndex: 'role', key: 'role', width: 90, render: roleTag },
+    { title: '创建时间', dataIndex: 'created_at', key: 'created_at', width: 170, sorter: true, sortOrder: sortField === 'created_at' ? sortOrder : undefined, render: (v: string) => new Date(v).toLocaleString('zh-CN') },
+    ...(canEdit ? [{
+      title: '操作', key: 'action', width: 150,
       render: (_: any, record: User) => (
         <Space>
           <Button type="link" size="small" onClick={() => openEdit(record)}>编辑</Button>
-          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record.id)} okButtonProps={{ danger: true }}>
-            <Button type="link" size="small" danger>删除</Button>
-          </Popconfirm>
+          {canDelete && (
+            <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record.id)} okButtonProps={{ danger: true }}>
+              <Button type="link" size="small" danger>删除</Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     }] : []),
@@ -144,7 +136,7 @@ export default function UsersPage() {
     : 0;
 
   return (
-    <>
+    <div className="page-transition">
       <div style={{ marginBottom: 24 }}>
         <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>👥 用户管理</Title>
         <Typography.Text type="secondary">管理系统中的所有注册用户</Typography.Text>
@@ -183,7 +175,7 @@ export default function UsersPage() {
           <Button type="primary" onClick={() => { setPage(1); fetchUsers(); }}>搜索</Button>
           <Button icon={<ReloadOutlined />} onClick={handleReset}>重置</Button>
           <div style={{ flex: 1 }} />
-          {isAuthenticated && (
+          {canEdit && (
             <Button type="primary" icon={<PlusOutlined />} onClick={openCreate}
               style={{ background: '#10b981', borderColor: '#10b981' }}>
               新增用户
@@ -232,8 +224,20 @@ export default function UsersPage() {
           ]}>
             <Input placeholder="请输入年龄（选填，0-200）" />
           </Form.Item>
+          {canChangeRole && (
+            <Form.Item name="role" label="角色">
+              <Select
+                options={[
+                  { value: ROLES.USER, label: '用户' },
+                  { value: ROLES.LEADER, label: '组长' },
+                  { value: ROLES.ADMIN, label: '管理员' },
+                ]}
+                placeholder="选择角色"
+              />
+            </Form.Item>
+          )}
         </Form>
       </Modal>
-    </>
+    </div>
   );
 }

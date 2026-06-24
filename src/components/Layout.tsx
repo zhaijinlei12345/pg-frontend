@@ -1,23 +1,38 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Layout as AntLayout, Menu, Button, Avatar, Dropdown } from 'antd';
+import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Tag } from 'antd';
 import {
   UserOutlined, TeamOutlined, LogoutOutlined, ThunderboltOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import { useAuth } from '../context/AuthContext';
+import { ROUTES } from '../routes';
 
 const { Sider, Content } = AntLayout;
+
+const ROLES = {
+  ADMIN: 'admin',
+  LEADER: 'leader',
+  USER: 'user',
+} as const;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
+  const isAdmin = user?.role === ROLES.ADMIN;
+
   const menuItems = [
     {
-      key: '/users',
+      key: ROUTES.USERS,
       icon: <TeamOutlined />,
       label: '用户管理',
     },
+    ...(isAdmin ? [{
+      key: ROUTES.AUDIT_LOGS,
+      icon: <FileTextOutlined />,
+      label: '操作日志',
+    }] : []),
   ];
 
   const userMenu = {
@@ -28,6 +43,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       if (key === 'logout') logout();
     },
   };
+
+  const roleLabel = user?.role === ROLES.ADMIN ? '管理员' : user?.role === ROLES.LEADER ? '组长' : '用户';
+  const roleColor = user?.role === ROLES.ADMIN ? 'purple' : user?.role === ROLES.LEADER ? 'blue' : 'default';
 
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
@@ -69,9 +87,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div style={{ fontSize: 13, fontWeight: 600, color: '#e1e4ed', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {user?.name}
             </div>
-            <div style={{ fontSize: 11, color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: 11, color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 2 }}>
               {user?.email}
             </div>
+            <Tag color={roleColor} style={{ fontSize: 10, lineHeight: '16px' }}>
+              {roleLabel}
+            </Tag>
           </div>
           <Dropdown menu={userMenu} placement="topRight" trigger={['click']}>
             <Button type="text" size="small" icon={<LogoutOutlined />} style={{ color: '#9ca3af' }} />
