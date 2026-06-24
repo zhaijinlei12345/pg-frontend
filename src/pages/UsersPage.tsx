@@ -129,7 +129,7 @@ export default function UsersPage() {
   return (
     <div className="page-transition">
       <div style={{ marginBottom: 24 }}>
-        <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>{t('users.title')}</Title>
+        <Title level={3} style={{ marginBottom: 4 }}>{t('users.title')}</Title>
         <Typography.Text type="secondary">{t('users.desc')}</Typography.Text>
       </div>
 
@@ -140,7 +140,7 @@ export default function UsersPage() {
         <Col xs={12} sm={6}><Card size="small"><Statistic title={t('users.status')} value={isAuthenticated ? t('users.loggedIn') : t('users.notLoggedIn')} /></Card></Col>
       </Row>
 
-      <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
+      <Card style={{ background: 'transparent' }}>
         <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
           <Select value={searchField} onChange={setSearchField} style={{ width: 110 }}
             options={[

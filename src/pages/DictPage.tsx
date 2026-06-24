@@ -63,14 +63,14 @@ export default function DictPage() {
   return (
     <div className="page-transition">
       <div style={{ marginBottom: 24 }}>
-        <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>{t('dict.title')}</Title>
+        <Title level={3} style={{ marginBottom: 4 }}>{t('dict.title')}</Title>
         <Text type="secondary">{t('dict.desc')}</Text>
       </div>
       <Row gutter={16}>
         <Col span={selectedType ? 12 : 24}>
           <Card title={t('dict.types')}
             extra={<Button type="primary" size="small" icon={<PlusOutlined />} onClick={openTypeCreate}>{t('dict.createType')}</Button>}
-            style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
+            style={{ background: 'transparent' }}>
             <Table columns={typeColumns} dataSource={types} rowKey="code" loading={typesLoading} scroll={{ x: 750 }} size="middle" pagination={false}
               locale={{ emptyText: t('dict.noTypes') }}
               onRow={(r) => ({ onClick: () => setSelectedType(r.code), style: { background: selectedType === r.code ? 'rgba(99,102,241,0.08)' : undefined, cursor: 'pointer' } })} />
@@ -80,7 +80,7 @@ export default function DictPage() {
           <Col span={12}>
             <Card title={`${selectedType} ${t('dict.entries')}`}
               extra={<Space><Button size="small" icon={<ReloadOutlined />} onClick={refreshEntries}>{t('dict.refresh')}</Button><Button type="primary" size="small" icon={<PlusOutlined />} onClick={openEntryCreate}>{t('dict.createEntry')}</Button><Button size="small" icon={<CloseOutlined />} onClick={() => setSelectedType('')}>{t('dict.close')}</Button></Space>}
-              style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
+              style={{ background: 'transparent' }}>
               <Table columns={entryColumns} dataSource={entries} rowKey="key" loading={entriesLoading} scroll={{ x: 650 }} size="middle" pagination={false} locale={{ emptyText: t('dict.noEntries') }} />
             </Card>
           </Col>

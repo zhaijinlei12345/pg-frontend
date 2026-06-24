@@ -31,7 +31,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: '#0a0b14', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--bg-page)', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', top: '-30%', left: '-10%', width: '60%', height: '80%',
         background: 'radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: '-20%', right: '-5%', width: '50%', height: '70%',
@@ -59,7 +59,7 @@ export default function LoginPage() {
       </div>
 
       <div style={{ width: 480, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40, position: 'relative', zIndex: 1 }}>
-        <div style={{ width: '100%', maxWidth: 400, background: 'rgba(15,17,25,0.85)', backdropFilter: 'blur(24px)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
+        <div style={{ width: '100%', maxWidth: 400, background: 'var(--bg-card)', backdropFilter: 'blur(24px)', borderRadius: 20, border: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 20px 60px rgba(0,0,0,0.4)', overflow: 'hidden' }}>
           <Tabs activeKey={tab} onChange={k => { setTab(k as 'login' | 'register'); form.resetFields(); }} centered
             items={[
               { key: 'login', label: t('auth.login') },

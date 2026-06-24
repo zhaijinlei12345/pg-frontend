@@ -3,11 +3,12 @@ import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Tag, Select } from
 import {
   UserOutlined, TeamOutlined, LogoutOutlined, ThunderboltOutlined,
   FileTextOutlined, BookOutlined, DashboardOutlined, ShoppingOutlined,
-  OrderedListOutlined, GlobalOutlined,
+  OrderedListOutlined, GlobalOutlined, BulbOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { usePerms } from '../hooks/usePerms';
+import { useTheme } from '../context/ThemeContext';
 import { useDictData } from '../hooks/useDict';
 import { ROUTES } from '../routes';
 
@@ -15,6 +16,7 @@ const { Sider, Content } = AntLayout;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { t, i18n } = useTranslation();
+  const { mode, toggle } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -52,9 +54,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Sider
         width={240}
         style={{
-          background: 'rgba(17,19,31,0.95)',
+          background: mode === 'dark' ? 'rgba(17,19,31,0.95)' : '#fff',
           backdropFilter: 'blur(20px)',
-          borderRight: '1px solid rgba(255,255,255,0.06)',
+          borderRight: mode === 'dark' ? '1px solid rgba(255,255,255,0.06)' : '1px solid rgba(0,0,0,0.06)',
         }}
       >
         <div className="sidebar-logo">
@@ -77,25 +79,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           />
         </div>
 
+        {/* 主题切换 */}
+        <div style={{ padding: '0 24px 12px' }}>
+          <Button block size="small" icon={<BulbOutlined />} onClick={toggle}>
+            {mode === 'dark' ? '🌙 Dark' : '☀️ Light'}
+          </Button>
+        </div>
+
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={({ key }) => navigate(key)}
           style={{ background: 'transparent', borderInlineEnd: 'none', flex: 1, overflow: 'auto' }}
-          theme="dark"
+          theme={mode}
         />
 
         <div style={{
           position: 'absolute', bottom: 16, left: 16, right: 16,
           padding: '12px 16px',
-          background: 'rgba(255,255,255,0.03)',
+          background: mode === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)',
           borderRadius: 10,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
           <Avatar icon={<UserOutlined />} style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#e1e4ed', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: mode === 'dark' ? '#e1e4ed' : '#333', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {user?.name}
             </div>
             <div style={{ fontSize: 11, color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: 2 }}>
@@ -106,7 +115,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Tag>
           </div>
           <Dropdown menu={userMenu} placement="topRight" trigger={['click']}>
-            <Button type="text" size="small" icon={<LogoutOutlined />} style={{ color: '#9ca3af' }} />
+            <Button type="text" size="small" icon={<LogoutOutlined />} style={{ color: mode === 'dark' ? '#9ca3af' : '#666' }} />
           </Dropdown>
         </div>
       </Sider>

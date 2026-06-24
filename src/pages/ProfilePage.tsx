@@ -43,10 +43,10 @@ export default function ProfilePage() {
   return (
     <div className="page-transition" style={{ maxWidth: 640 }}>
       <div style={{ marginBottom: 24 }}>
-        <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>{t('profile.title')}</Title>
+        <Title level={3} style={{ marginBottom: 4 }}>{t('profile.title')}</Title>
         <Text type="secondary">{t('profile.desc')}</Text>
       </div>
-      <Card title={t('profile.basicInfo')} style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)', marginBottom: 24 }}>
+      <Card title={t('profile.basicInfo')} style={{ background: 'transparent', marginBottom: 24 }}>
         <Descriptions column={1} size="small" style={{ marginBottom: 24 }} labelStyle={{ color: '#6b7280' }} contentStyle={{ color: '#e1e4ed' }}>
           <Descriptions.Item label={t('profile.registeredAt')}>{user?.created_at ? new Date(user.created_at).toLocaleString('zh-CN') : '-'}</Descriptions.Item>
           <Descriptions.Item label={t('profile.role')}><Tag color={roleEntry?.color || undefined}>{roleEntry?.label || user?.role || 'User'}</Tag></Descriptions.Item>
@@ -59,7 +59,7 @@ export default function ProfilePage() {
           <Button type="primary" htmlType="submit" loading={profileLoading} icon={<SaveOutlined />}>{t('profile.save')}</Button>
         </Form>
       </Card>
-      <Card title={t('profile.changePwd')} style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
+      <Card title={t('profile.changePwd')} style={{ background: 'transparent' }}>
         <Form form={pwdForm} layout="vertical" onFinish={handlePassword}>
           <Form.Item name="oldPassword" label={t('profile.oldPwd')} rules={[{ required: true }]}><Input.Password prefix={<LockOutlined />} /></Form.Item>
           <Form.Item name="newPassword" label={t('profile.newPwd')} rules={[{ required: true, min: 6 }]}><Input.Password prefix={<LockOutlined />} /></Form.Item>

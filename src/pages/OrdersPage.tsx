@@ -46,10 +46,10 @@ export default function OrdersPage() {
   return (
     <div className="page-transition">
       <div style={{ marginBottom: 24 }}>
-        <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>{t('orders.title')}</Title>
+        <Title level={3} style={{ marginBottom: 4 }}>{t('orders.title')}</Title>
         <Text type="secondary">{t('orders.desc')}</Text>
       </div>
-      <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
+      <Card style={{ background: 'transparent' }}>
         <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
           <Input prefix={<SearchOutlined />} placeholder={t('orders.search')} value={search} onChange={e => setSearch(e.target.value)} onPressEnter={() => { setPage(1); fetch(); }} style={{ width: 200 }} allowClear />
           <Select value={status} onChange={v => { setStatus(v); setPage(1); }} style={{ width: 120 }} allowClear placeholder={t('orders.status')} options={(statusDict?.entries || []).map(e => ({ value: e.key, label: e.label }))} />

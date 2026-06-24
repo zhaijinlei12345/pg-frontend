@@ -26,10 +26,10 @@ export default function AuditLogsPage() {
   return (
     <div className="page-transition">
       <div style={{ marginBottom: 24 }}>
-        <Title level={3} style={{ color: '#e1e4ed', marginBottom: 4 }}>{t('menu.audit')}</Title>
+        <Title level={3} style={{ marginBottom: 4 }}>{t('menu.audit')}</Title>
         <Text type="secondary">{t('users.desc')}</Text>
       </div>
-      <Card style={{ background: 'rgba(23,25,40,0.7)', borderColor: 'rgba(255,255,255,0.05)' }}>
+      <Card style={{ background: 'transparent' }}>
         <div style={{ marginBottom: 16 }}>
           <Select value={actionFilter} onChange={v => { setActionFilter(v); setPage(1); }} style={{ width: 130 }} allowClear
             placeholder={t('users.action')}

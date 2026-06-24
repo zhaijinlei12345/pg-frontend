@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// 开发环境连本地后端，Docker 部署通过 nginx 代理同域
+const baseURL = import.meta.env.PROD ? '/api/v1' : 'http://localhost:3000/api/v1';
+
 const client = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
+  baseURL,
   timeout: 10000,
   headers: { 'Content-Type': 'application/json' },
 });

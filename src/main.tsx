@@ -4,6 +4,7 @@ import zhCN from 'antd/locale/zh_CN';
 import enUS from 'antd/locale/en_US';
 import { useTranslation } from 'react-i18next';
 import './i18n';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import App from './App';
 import './styles/index.css';
 
@@ -14,12 +15,13 @@ const antdLocales: Record<string, typeof zhCN> = {
 
 function Root() {
   const { i18n } = useTranslation();
+  const { mode } = useTheme();
 
   return (
     <ConfigProvider
       locale={antdLocales[i18n.language] || zhCN}
       theme={{
-        algorithm: theme.darkAlgorithm,
+        algorithm: mode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
           colorPrimary: '#6366f1',
           colorSuccess: '#10b981',
@@ -37,4 +39,8 @@ function Root() {
   );
 }
 
-createRoot(document.getElementById('root')!).render(<Root />);
+createRoot(document.getElementById('root')!).render(
+  <ThemeProvider>
+    <Root />
+  </ThemeProvider>
+);
